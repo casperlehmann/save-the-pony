@@ -1,14 +1,24 @@
 import React from 'react';
 
-function makeBoard() {
-  return [
-    [ ['west', 'north'], ['north'], ['north'], ['north'], ['north'] ],
-    [ ['west'], ['west'], ['west'], ['west'], ['north'] ],
-    [ ['west'], ['west'], ['west'], ['west'], ['north'] ],
-    [ ['west'], ['west'], [], ['west'], ['north'] ],
-    [ ['west'], ['north'], ['north'], [], ['north'] ],
-  ];
+const data = [
+  ['west', 'north'], ['north'], ['north'], ['north'], ['north'],
+  ['west'], ['west'], ['west'], ['west'], ['north'],
+  ['west'], ['west'], ['west'], ['west'], ['north'],
+  ['west'], ['west'], [], ['west'], ['north'],
+  ['west'], ['north'], ['north'], [], ['north'],
+];
+
+function makeBoard(data, width, height) {
+  const out = data.reduce(
+    (rows, key, index) => (index % width == 0
+      ? rows.push([key])
+      : rows[rows.length-1].push(key)) && rows,
+    [])
+  return out
 }
+
+const width = 5
+const height = 5
 
 const Tile = (params) => {
   let style = {
@@ -38,7 +48,7 @@ const can_walk_west = (tile) => {
 
 export default class App extends React.Component {
   render(props) {
-    const tiles = makeBoard();
+    const tiles = makeBoard(data, width, height);
 
     return (
       <div className="Board">
