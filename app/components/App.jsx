@@ -42,8 +42,7 @@ const Tile = (params) => {
     borderStyle: 'solid',
     borderColor: 'black',
   }
-  
-  return <div style={style}></div>;
+  return <div onClick={params.clickHandler} style={style}></div>;
 }
 
 const can_walk_north = (tile) => {
@@ -59,13 +58,13 @@ const can_walk_west = (tile) => {
   return tile.indexOf("west") >= 0
 }
 const contains_pony = (columnIndex, rowIndex, width) => {
-  return columnIndex * width + rowIndex === pony_pos
+  return rowIndex * width + columnIndex === pony_pos
 }
 const contains_domo = (columnIndex, rowIndex, width) => {
-  return columnIndex * width + rowIndex === domo_pos
+  return rowIndex * width + columnIndex === domo_pos
 }
 const contains_exit = (columnIndex, rowIndex, width) => {
-  return columnIndex * width + rowIndex === exit_pos
+  return rowIndex * width + columnIndex === exit_pos
 }
 
 export default class App extends React.Component {
@@ -80,6 +79,7 @@ export default class App extends React.Component {
             const pony = contains_pony(columnIndex, rowIndex, width);
             const domo = contains_domo(columnIndex, rowIndex, width);
             const exit = contains_exit(columnIndex, rowIndex, width);
+            const index = rowIndex * width + columnIndex
             var background
             switch(true) {
               case pony:
@@ -96,7 +96,9 @@ export default class App extends React.Component {
             const east = can_walk_east(tile, row.length, columnIndex);
             const south = can_walk_south(tile, tiles.length, rowIndex);
             const west = can_walk_west(tile);
-            return <Tile north={north} south={south} east={east} west={west} background={background}/>;
+            var clickHandler = (i) => alert('Clicked on: ' + i)
+            return <Tile north={north} south={south} east={east} west={west} background={background}
+              clickHandler={() => clickHandler(index)}/>;
           })
         })}
       </div>
