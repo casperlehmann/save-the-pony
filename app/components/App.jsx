@@ -9,9 +9,16 @@ import {can_walk_north, can_walk_east, can_walk_south, can_walk_west} from './na
 export default class App extends React.Component {
   render(props) {
     const tiles = makeBoard(data, width, height);
+    const style = {
+      width: '400px',
+      height: '400px',
 
+      display: 'grid',
+      gridTemplateColumns: 'repeat(' + width + ', 1fr)',
+      gridTemplateRows: 'repeat(' + height + ', 1fr)',
+    };
     return (
-      <div className="Board">
+      <div className="Board" style={style}>
         {tiles.map((row, rowIndex) => {
           return row.map((tileType, columnIndex) => {
             const tile = tiles[rowIndex][columnIndex];
