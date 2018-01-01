@@ -19,6 +19,20 @@ function httpPost(url, payload, callback)
     });
 }
 
+function httpGet(url, callback)
+{
+    fetch(url,  {
+      method: "GET",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    }).then((res) => res.json())
+    .then(function(data){
+      callback(data)
+    });
+}
+
 export default class App extends React.Component {
 
   constructor(props) {
@@ -37,9 +51,27 @@ export default class App extends React.Component {
       pony_name_param: props.pony_name_param,
       difficulty_param: props.difficulty_param,
     };
-    this.newMazeUrl = 'https://ponychallenge.trustpilot.com/pony-challenge/maze'
+    const ponyChallengeUrlStub = 'https://ponychallenge.trustpilot.com/'
+    this.newMazeUrl = ponyChallengeUrlStub + 'pony-challenge/maze'
+    this.getStateUrlStub = ponyChallengeUrlStub + 'pony-challenge/maze/'
   }
 
+  updateGameState(data) {
+    this.setState({
+      pony_pos: data.pony[0],
+      domo_pos: data.domokun[0],
+    })
+  }
+
+  updateMap(data) {
+    this.setState({
+      data: data.data,
+      width: data.size[0],
+      height: data.size[1],
+      exit_pos: data['end-point'][0],
+      gameStarted: true,
+    })
+  }
   getBackground(position) {
     if (this.state.pony_pos == position) {
       return 'url('+pony_character+')'
@@ -150,7 +182,15 @@ export default class App extends React.Component {
         <div><label>Game ID: </label><input type='text' ref='game_id' value={this.state.game_id} onChange={this.update.bind(this)}/></div>
         <button
           style={{width: '100%', height: '15%'}}
-          onClick={() => this.setState({gameStarted: true})}
+          onClick={() => {
+            httpGet(
+              this.getStateUrlStub + this.state.game_id,
+              (data) => {
+                this.updateGameState(data);
+                this.updateMap(data);
+              }
+            )
+          }}
         >Start Game</button>
       </div>
     )
