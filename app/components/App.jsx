@@ -5,6 +5,21 @@ import {makeBoard} from './make_board'
 import {Tile, TileTransformer} from './tile'
 import PropTypes from 'prop-types';
 
+function httpPost(url, payload, callback)
+{
+    fetch(url,  {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    }).then((res) => res.json())
+    .then(function(data){
+      callback(data)
+    });
+}
+
 export default class App extends React.Component {
 
   constructor(props) {
@@ -18,6 +33,10 @@ export default class App extends React.Component {
       exit_pos: props.exit_pos,
       pony_paths: [],
       gameStarted: false,
+      width_param: props.width_param,
+      height_param: props.height_param,
+      pony_name_param: props.pony_name_param,
+      difficulty_param: props.difficulty_param,
     };
   }
 
@@ -43,6 +62,28 @@ export default class App extends React.Component {
     });
   }}
 
+  update(){
+    const proofDimIsWithinRange = (i, min, max) => {
+      const parsed = parseInt(i)
+      let bounded
+      if (isNaN(parsed)) {bounded = 15} else {bounded = Math.max(Math.min(max, parsed), min)}
+      return bounded
+    }
+    const proofNameIsPonyName = (name) => {
+      if( ['Fluttershy', 'Rainbow Dash'].indexOf(name) > -1){
+        return this.refs.pony_name.value
+      } else {
+        return 'Fluttershy'
+      }
+    }
+    this.setState({
+      width_param: proofDimIsWithinRange(this.refs.width.value, 15, 25),
+      height_param: proofDimIsWithinRange(this.refs.height.value, 15, 25),
+      pony_name_param: proofNameIsPonyName(this.refs.pony_name.value),
+      difficulty_param: proofDimIsWithinRange(this.refs.difficulty.value, 0, 10),
+    })
+  }
+
   render() {
     const tiles = makeBoard(this.state.data, this.state.width, this.state.height);
     const outerStyle = {
@@ -66,14 +107,35 @@ export default class App extends React.Component {
       justifyContent: 'center',
       alignItems: 'center'
     };
+    const newMazeUrl = 'https://ponychallenge.trustpilot.com/pony-challenge/maze'
+    const request_game_callback = (data) => document.getElementById('game_id').value = data.maze_id;
 
-    if (false && !this.state.gameStarted) {return (
+    if (!this.state.gameStarted) {return (
       <div className="StartScreen" style={Object.assign(outerStyle, menuStyle)}>
+        <div><label>Width: </label><input type='number' ref='width' min="15" max="25" value={this.state.width_param} onChange={this.update.bind(this)}/></div>
+        <div><label>Height: </label><input type='number' ref='height' min="15" max="25" value={this.state.height_param} onChange={this.update.bind(this)}/></div>
+        <div><label>Pony Name: </label>
+          <select type='text' ref='pony_name' value={this.state.pony_name_param} onChange={this.update.bind(this)}>
+            <option value='Fluttershy'>Fluttershy</option>
+            <option value='Rainbow Dash'>Rainbow Dash</option>
+          </select>
+        </div>
+        <div><label>Difficulty: </label><input type='number' ref='difficulty' min="0" max="10" value={this.state.difficulty_param} onChange={this.update.bind(this)}/></div>
+        <button onClick={
+          () => httpPost(newMazeUrl,
+            {
+              "maze-width": this.state.width_param,
+              "maze-height": this.state.height_param,
+              "maze-player-name": this.state.pony_name_param,
+              "difficulty": this.state.difficulty_param
+              }
+            , request_game_callback)
+          }>Request Game</button>
+        <div><label>Game ID: </label><input type='text' id='game_id'/></div>
         <button
           style={{width: '100%', height: '15%'}}
           onClick={() => this.setState({gameStarted: true})}
-          >
-          Start Game</button>
+        >Start Game</button>
       </div>
     )}
 
@@ -106,6 +168,10 @@ App.propTypes = {
   pony_pos: PropTypes.number,
   domo_pos: PropTypes.number,
   exit_pos: PropTypes.number,
+  width_param: PropTypes.number,
+  height_param: PropTypes.number,
+  pony_name_param: PropTypes.string,
+  difficulty_param: PropTypes.number,
 }
 
 App.defaultProps = {
@@ -115,4 +181,8 @@ App.defaultProps = {
   pony_pos: pony_pos,
   domo_pos: domo_pos,
   exit_pos: exit_pos,
+  width_param: 15,
+  height_param: 15,
+  pony_name_param: 'Fluttershy',
+  difficulty_param: 1,
 }
