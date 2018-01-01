@@ -63,10 +63,20 @@ export default class App extends React.Component {
   }}
 
   update(){
-    const proofDimIsWithinRange = (i, min, max) => {
+    this.setState({
+      width_param: this.refs.width.value,
+      height_param: this.refs.height.value,
+      pony_name_param: this.refs.pony_name.value,
+      difficulty_param: this.refs.difficulty.value,
+      game_id: this.refs.game_id.value,
+    })
+  }
+
+  validate(){
+    const proofDimIsWithinRange = (i, min, max, fallback) => {
       const parsed = parseInt(i)
       let bounded
-      if (isNaN(parsed)) {bounded = 15} else {bounded = Math.max(Math.min(max, parsed), min)}
+      if (isNaN(parsed)) {bounded = min} else {bounded = Math.max(Math.min(max, parsed), min)}
       return bounded
     }
     const proofNameIsPonyName = (name) => {
@@ -77,10 +87,11 @@ export default class App extends React.Component {
       }
     }
     this.setState({
-      width_param: proofDimIsWithinRange(this.refs.width.value, 15, 25),
-      height_param: proofDimIsWithinRange(this.refs.height.value, 15, 25),
+      width_param: proofDimIsWithinRange(this.refs.width.value, 15, 25, this.state.width_param),
+      height_param: proofDimIsWithinRange(this.refs.height.value, 15, 25, this.state.height_param),
       pony_name_param: proofNameIsPonyName(this.refs.pony_name.value),
-      difficulty_param: proofDimIsWithinRange(this.refs.difficulty.value, 0, 10),
+      difficulty_param: proofDimIsWithinRange(this.refs.difficulty.value, 0, 10, this.state.difficulty_param),
+      game_id: this.refs.game_id.value,
     })
   }
 
@@ -112,15 +123,15 @@ export default class App extends React.Component {
 
     if (!this.state.gameStarted) {return (
       <div className="StartScreen" style={Object.assign(outerStyle, menuStyle)}>
-        <div><label>Width: </label><input type='number' ref='width' min="15" max="25" value={this.state.width_param} onChange={this.update.bind(this)}/></div>
-        <div><label>Height: </label><input type='number' ref='height' min="15" max="25" value={this.state.height_param} onChange={this.update.bind(this)}/></div>
+        <div><label>Width: </label><input type='number' ref='width' min="15" max="25" value={this.state.width_param} onChange={this.update.bind(this)} onBlur={this.validate.bind(this)}/></div>
+        <div><label>Height: </label><input type='number' ref='height' min="15" max="25" value={this.state.height_param} onChange={this.update.bind(this)} onBlur={this.validate.bind(this)}/></div>
         <div><label>Pony Name: </label>
-          <select type='text' ref='pony_name' value={this.state.pony_name_param} onChange={this.update.bind(this)}>
+          <select type='text' ref='pony_name' value={this.state.pony_name_param} onChange={this.update.bind(this)} onBlur={this.validate.bind(this)}>
             <option value='Fluttershy'>Fluttershy</option>
             <option value='Rainbow Dash'>Rainbow Dash</option>
           </select>
         </div>
-        <div><label>Difficulty: </label><input type='number' ref='difficulty' min="0" max="10" value={this.state.difficulty_param} onChange={this.update.bind(this)}/></div>
+        <div><label>Difficulty: </label><input type='number' ref='difficulty' min="0" max="10" value={this.state.difficulty_param} onChange={this.update.bind(this)} onBlur={this.validate.bind(this)}/></div>
         <button onClick={
           () => httpPost(newMazeUrl,
             {
@@ -131,7 +142,7 @@ export default class App extends React.Component {
               }
             , request_game_callback)
           }>Request Game</button>
-        <div><label>Game ID: </label><input type='text' id='game_id'/></div>
+        <div><label>Game ID: </label><input type='text' ref='game_id' value={this.state.game_id} onChange={this.update.bind(this)}/></div>
         <button
           style={{width: '100%', height: '15%'}}
           onClick={() => this.setState({gameStarted: true})}
