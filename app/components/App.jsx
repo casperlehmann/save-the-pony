@@ -1,5 +1,4 @@
 import React from 'react';
-import {data, width, height, pony_pos, domo_pos, exit_pos} from './test_data'
 import {pony_character, domo_character, exit_character} from './resources'
 import {makeBoard} from './make_board'
 import {Tile, TileTransformer} from './tile'
@@ -111,8 +110,8 @@ export default class App extends React.Component {
       borderColor: 'black',
     };
     const gameStyle =  {
-      gridTemplateColumns: 'repeat(' + width + ', 1fr)',
-      gridTemplateRows: 'repeat(' + height + ', 1fr)',
+      gridTemplateColumns: 'repeat(' + this.state.width + ', 1fr)',
+      gridTemplateRows: 'repeat(' + this.state.height + ', 1fr)',
     };
     const menuStyle = {
       justifyContent: 'center',
@@ -120,8 +119,8 @@ export default class App extends React.Component {
     };
     const newMazeUrl = 'https://ponychallenge.trustpilot.com/pony-challenge/maze'
     const request_game_callback = (data) => document.getElementById('game_id').value = data.maze_id;
-
-    if (!this.state.gameStarted) {return (
+    if (!this.state.gameStarted) {
+      return(
       <div className="StartScreen" style={Object.assign(outerStyle, menuStyle)}>
         <div><label>Width: </label><input type='number' ref='width' min="15" max="25" value={this.state.width_param} onChange={this.update.bind(this)} onBlur={this.validate.bind(this)}/></div>
         <div><label>Height: </label><input type='number' ref='height' min="15" max="25" value={this.state.height_param} onChange={this.update.bind(this)} onBlur={this.validate.bind(this)}/></div>
@@ -154,8 +153,8 @@ export default class App extends React.Component {
       <div className="Board" style={Object.assign(outerStyle, gameStyle)}>
         {tiles.map((row, rowIndex) => {
           return row.map((tileType, columnIndex) => {
-            const tile = TileTransformer(tiles, rowIndex, columnIndex, width, height);
-            const index = rowIndex * width + columnIndex
+            const tile = TileTransformer(tiles, rowIndex, columnIndex, this.state.width, this.state.height);
+            const index = rowIndex * this.state.width + columnIndex
             if (this.state.pony_pos === index) {this.state.pony_paths = tile.walkable}
             const background = this.getBackground(index);
             return <Tile
@@ -185,13 +184,21 @@ App.propTypes = {
   difficulty_param: PropTypes.number,
 }
 
+const test_data = [
+  ['west', 'north'], ['north'], ['north'], ['north'], ['north'],
+  ['west'], ['west'], ['west'], ['west'], ['north'],
+  ['west'], ['west'], ['west'], ['west'], ['north'],
+  ['west'], ['west'], [], ['west'], ['north'],
+  ['west'], ['north'], ['north'], [], ['north'],
+];
+
 App.defaultProps = {
-  data: data,
-  width: width,
-  height: height,
-  pony_pos: pony_pos,
-  domo_pos: domo_pos,
-  exit_pos: exit_pos,
+  data: test_data,
+  width: 5,
+  height: 5,
+  pony_pos: 0,
+  domo_pos: 3,
+  exit_pos: 9,
   width_param: 15,
   height_param: 15,
   pony_name_param: 'Fluttershy',
