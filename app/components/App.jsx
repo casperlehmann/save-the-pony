@@ -21,7 +21,7 @@ function httpPost(url, payload, callback)
 
 function httpGet(url, callback)
 {
-    fetch(url,  {
+    fetch(url, {
       method: "GET",
       headers: {
         'Accept': 'application/json',
@@ -50,6 +50,8 @@ export default class App extends React.Component {
       height_param: props.height_param,
       pony_name_param: props.pony_name_param,
       difficulty_param: props.difficulty_param,
+      pixelWidth: '500px',
+      pixelHeight: '500px',
     };
     const ponyChallengeUrlStub = 'https://ponychallenge.trustpilot.com/'
     this.newMazeUrl = ponyChallengeUrlStub + 'pony-challenge/maze'
@@ -105,7 +107,7 @@ export default class App extends React.Component {
   }
 
   validate(){
-    const proofDimIsWithinRange = (i, min, max, fallback) => {
+    const proofDimIsWithinRange = (i, min, max) => {
       const parsed = parseInt(i)
       let bounded
       if (isNaN(parsed)) {bounded = min} else {bounded = Math.max(Math.min(max, parsed), min)}
@@ -118,19 +120,26 @@ export default class App extends React.Component {
         return 'Fluttershy'
       }
     }
+    const newBlockWidth = proofDimIsWithinRange(this.refs.width.value, 15, 25)
+    const newBlockHeight = proofDimIsWithinRange(this.refs.height.value, 15, 25)
+    const widthPerBlock = Math.min(500 + 40*(newBlockWidth-15), window.innerWidth-20)/newBlockWidth
+    const heightPerBlock = Math.min(500 + 40*(newBlockHeight-15), window.innerHeight-20)/newBlockHeight
+    const blockUnit = Math.min(widthPerBlock, heightPerBlock)
     this.setState({
-      width_param: proofDimIsWithinRange(this.refs.width.value, 15, 25, this.state.width_param),
-      height_param: proofDimIsWithinRange(this.refs.height.value, 15, 25, this.state.height_param),
+      width_param: newBlockWidth,
+      pixelWidth: newBlockWidth * blockUnit + 'px',
+      height_param: newBlockHeight,
+      pixelHeight: newBlockHeight * blockUnit + 'px',
       pony_name_param: proofNameIsPonyName(this.refs.pony_name.value),
-      difficulty_param: proofDimIsWithinRange(this.refs.difficulty.value, 0, 10, this.state.difficulty_param),
+      difficulty_param: proofDimIsWithinRange(this.refs.difficulty.value, 0, 10),
       game_id: this.refs.game_id.value,
     })
   }
 
   render() {
     const outerStyle = {
-      width: '400px',
-      height: '400px',
+      width: this.state.pixelWidth,
+      height: this.state.pixelHeight,
       display: 'grid',
 
       borderTop: '1px',
