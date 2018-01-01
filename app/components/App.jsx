@@ -37,6 +37,7 @@ export default class App extends React.Component {
       pony_name_param: props.pony_name_param,
       difficulty_param: props.difficulty_param,
     };
+    this.newMazeUrl = 'https://ponychallenge.trustpilot.com/pony-challenge/maze'
   }
 
   getBackground(position) {
@@ -95,7 +96,6 @@ export default class App extends React.Component {
   }
 
   render() {
-    const tiles = makeBoard(this.state.data, this.state.width, this.state.height);
     const outerStyle = {
       width: '400px',
       height: '400px',
@@ -117,10 +117,16 @@ export default class App extends React.Component {
       justifyContent: 'center',
       alignItems: 'center'
     };
-    const newMazeUrl = 'https://ponychallenge.trustpilot.com/pony-challenge/maze'
-    const request_game_callback = (data) => document.getElementById('game_id').value = data.maze_id;
+
     if (!this.state.gameStarted) {
-      return(
+      return this.renderMenu(outerStyle, menuStyle)
+    }
+    return this.renderGame(outerStyle, gameStyle)
+  }
+
+  renderMenu(outerStyle, menuStyle) {
+    const request_game_callback = (data) => {this.setState({game_id: data.maze_id});}
+    return(
       <div className="StartScreen" style={Object.assign(outerStyle, menuStyle)}>
         <div><label>Width: </label><input type='number' ref='width' min="15" max="25" value={this.state.width_param} onChange={this.update.bind(this)} onBlur={this.validate.bind(this)}/></div>
         <div><label>Height: </label><input type='number' ref='height' min="15" max="25" value={this.state.height_param} onChange={this.update.bind(this)} onBlur={this.validate.bind(this)}/></div>
@@ -132,7 +138,7 @@ export default class App extends React.Component {
         </div>
         <div><label>Difficulty: </label><input type='number' ref='difficulty' min="0" max="10" value={this.state.difficulty_param} onChange={this.update.bind(this)} onBlur={this.validate.bind(this)}/></div>
         <button onClick={
-          () => httpPost(newMazeUrl,
+          () => httpPost(this.newMazeUrl,
             {
               "maze-width": this.state.width_param,
               "maze-height": this.state.height_param,
@@ -147,8 +153,11 @@ export default class App extends React.Component {
           onClick={() => this.setState({gameStarted: true})}
         >Start Game</button>
       </div>
-    )}
+    )
+  }
 
+  renderGame(outerStyle, gameStyle){
+    const tiles = makeBoard(this.state.data, this.state.width, this.state.height);
     return (
       <div className="Board" style={Object.assign(outerStyle, gameStyle)}>
         {tiles.map((row, rowIndex) => {
