@@ -55,7 +55,7 @@ export default class App extends React.Component {
     };
     const ponyChallengeUrlStub = 'https://ponychallenge.trustpilot.com/'
     this.newMazeUrl = ponyChallengeUrlStub + 'pony-challenge/maze'
-    this.getStateUrlStub = ponyChallengeUrlStub + 'pony-challenge/maze/'
+    this.gameUrlStub = ponyChallengeUrlStub + 'pony-challenge/maze/'
   }
 
   updateGameState(data) {
@@ -89,12 +89,31 @@ export default class App extends React.Component {
     }
   }
 
-  clickHandler(i, thing) {
-    if (this.state.pony_paths.indexOf(i) != -1){
-    this.setState({pony_pos: i}, function() {
-      //console.log('pony click:', this.state.pony_pos)
-    });
+  clickHandler(i) {
+    if (!(this.state.pony_paths.indexOf(i) != -1)){
+      return
+    } else {
+    let direction
+    if (i === this.state.pony_pos - this.state.width) {direction = 'north'}
+    else if (i === this.state.pony_pos - 1) {direction = 'west'}
+    else if (i === this.state.pony_pos + 1) {direction = 'east'}
+    else if (i === this.state.pony_pos + this.state.width) {direction = 'south'}
+    // ! handle failure
+    httpPost(
+      this.gameUrlStub  + this.state.game_id,
+      {
+        "direction": direction
+      },
+      (data) => this.pony_moved_callback(data) // ! We need the context.
+      )
   }}
+
+  pony_moved_callback(data) {
+    httpGet(
+      this.gameUrlStub + this.state.game_id,
+      (data) => {this.updateGameState(data)}
+    )
+  }
 
   update(){
     this.setState({
@@ -185,15 +204,15 @@ export default class App extends React.Component {
               "maze-height": this.state.height_param,
               "maze-player-name": this.state.pony_name_param,
               "difficulty": this.state.difficulty_param
-              }
-            , request_game_callback)
+            },
+            request_game_callback)
           }>Request Game</button>
         <div><label>Game ID: </label><input type='text' ref='game_id' value={this.state.game_id} onChange={this.update.bind(this)}/></div>
         <button
           style={{width: '100%', height: '15%'}}
           onClick={() => {
             httpGet(
-              this.getStateUrlStub + this.state.game_id,
+              this.gameUrlStub + this.state.game_id,
               (data) => {
                 this.updateGameState(data);
                 this.updateMap(data);
