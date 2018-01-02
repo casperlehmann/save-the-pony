@@ -45,25 +45,41 @@ export default class App extends React.Component {
       domo_pos: props.domo_pos,
       exit_pos: props.exit_pos,
       pony_paths: [],
-      gameStarted: false,
+      gameStarted: props.gameStarted,
       width_param: props.width_param,
       height_param: props.height_param,
       pony_name_param: props.pony_name_param,
       difficulty_param: props.difficulty_param,
       pixelWidth: '500px',
       pixelHeight: '500px',
+      game_id: props.game_id,
+      hidden_url: props.hidden_url,
     };
-    const ponyChallengeUrlStub = 'https://ponychallenge.trustpilot.com/'
-    this.newMazeUrl = ponyChallengeUrlStub + 'pony-challenge/maze'
-    this.gameUrlStub = ponyChallengeUrlStub + 'pony-challenge/maze/'
+    this.ponyChallengeUrlStub = 'https://ponychallenge.trustpilot.com'
+    this.newMazeUrl = this.ponyChallengeUrlStub + '/pony-challenge/maze'
+    this.gameUrlStub = this.ponyChallengeUrlStub + '/pony-challenge/maze/'
   }
 
   updateGameState(data) {
+    console.log(data)
     this.setState({
       pony_pos: data.pony[0],
       domo_pos: data.domokun[0],
-    })
-  }
+    },
+    () => {
+      // Only run this after pieces have moved. Right now alert pops out before finishing.
+      if (data['game-state'].state === 'over'){
+        this.setState({
+          game_result: data['game-state']['state-result'], // "You lost. Killed by monster"
+        })
+      } else if (data['game-state'].state === 'won'){
+        this.setState({
+          game_result: data['game-state']['state-result'], // "You won. Game ended"
+          hidden_url: data['game-state']['hidden-url'] // "/eW91X3NhdmVkX3RoZV9wb255.jpg"
+        })
+      };
+    }
+  )}
 
   updateMap(data) {
     this.setState({
@@ -177,7 +193,18 @@ export default class App extends React.Component {
       justifyContent: 'center',
       alignItems: 'center'
     };
-
+    if (this.state.hidden_url) {
+      //var s = require('url(' + this.ponyChallengeUrlStub + this.state.hidden_url + ')')
+      //console.log(s)
+      //window.open(this.ponyChallengeUrlStub + this.state.hidden_url)
+      //console.log(this.ponyChallengeUrlStub + this.state.hidden_url)
+      return (
+        <div>
+          <img src={this.ponyChallengeUrlStub + this.state.hidden_url}
+            width={window.innerWidth-20} height={window.innerHeight-20}/>
+        </div>
+      )
+    }
     if (!this.state.gameStarted) {
       return this.renderMenu(outerStyle, menuStyle)
     }
@@ -259,6 +286,8 @@ App.propTypes = {
   height_param: PropTypes.number,
   pony_name_param: PropTypes.string,
   difficulty_param: PropTypes.number,
+  gameStarted: PropTypes.bool,
+  game_id: PropTypes.string,
 }
 
 const test_data = [
@@ -280,4 +309,6 @@ App.defaultProps = {
   height_param: 15,
   pony_name_param: 'Fluttershy',
   difficulty_param: 1,
+  gameStarted: false, // ! Cannot be true. Fix.
+  game_id: '342e33fd-be7b-4d5f-8c51-685dbd6b97b0',
 }
