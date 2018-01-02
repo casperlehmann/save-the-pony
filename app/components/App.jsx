@@ -3,35 +3,7 @@ import {pony_character, domo_character, exit_character} from './resources'
 import {makeBoard} from './make_board'
 import {Tile, TileTransformer} from './tile'
 import PropTypes from 'prop-types';
-
-function httpPost(url, payload, callback)
-{
-    fetch(url,  {
-      method: "POST",
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    }).then((res) => res.json())
-    .then(function(data){
-      callback(data)
-    });
-}
-
-function httpGet(url, callback)
-{
-    fetch(url, {
-      method: "GET",
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    }).then((res) => res.json())
-    .then(function(data){
-      callback(data)
-    });
-}
+import {httpPost, httpGet} from './requests';
 
 export default class App extends React.Component {
 
