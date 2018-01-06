@@ -33,13 +33,12 @@ export default class App extends React.Component {
   }
 
   updateGameState(data) {
-    console.log(data)
     this.setState({
       pony_pos: data.pony[0],
       domo_pos: data.domokun[0],
     },
+    // Upon updating, check for winning (or losing) conditions.
     () => {
-      // Only run this after pieces have moved. Right now alert pops out before finishing.
       if (data['game-state'].state === 'over'){
         this.setState({
           game_result: data['game-state']['state-result'], // "You lost. Killed by monster"
@@ -73,7 +72,7 @@ export default class App extends React.Component {
       return 'url('+exit_character+')'
     }
     else {
-      return 'url(https://i.imgur.com/c3EsnP6.jpg)'
+      return url(https://i.imgur.com/c3EsnP6.jpg)'
     }
   }
 
@@ -103,7 +102,7 @@ export default class App extends React.Component {
     )
   }
 
-  update(){
+  update_params(){
     this.setState({
       width_param: this.refs.width.value,
       height_param: this.refs.height.value,
@@ -113,7 +112,7 @@ export default class App extends React.Component {
     })
   }
 
-  validate(){
+  validate_params(){
     const proofDimIsWithinRange = (i, min, max) => {
       const parsed = parseInt(i)
       let bounded
@@ -187,15 +186,15 @@ export default class App extends React.Component {
     const request_game_callback = (data) => {this.setState({game_id: data.maze_id});}
     return(
       <div className="StartScreen" style={Object.assign(outerStyle, menuStyle)}>
-        <div><label>Width: </label><input type='number' ref='width' min="15" max="25" value={this.state.width_param} onChange={this.update.bind(this)} onBlur={this.validate.bind(this)}/></div>
-        <div><label>Height: </label><input type='number' ref='height' min="15" max="25" value={this.state.height_param} onChange={this.update.bind(this)} onBlur={this.validate.bind(this)}/></div>
+        <div><label>Width: </label><input type='number' ref='width' min="15" max="25" value={this.state.width_param} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
+        <div><label>Height: </label><input type='number' ref='height' min="15" max="25" value={this.state.height_param} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
         <div><label>Pony Name: </label>
-          <select type='text' ref='pony_name' value={this.state.pony_name_param} onChange={this.update.bind(this)} onBlur={this.validate.bind(this)}>
+          <select type='text' ref='pony_name' value={this.state.pony_name_param} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}>
             <option value='Fluttershy'>Fluttershy</option>
             <option value='Rainbow Dash'>Rainbow Dash</option>
           </select>
         </div>
-        <div><label>Difficulty: </label><input type='number' ref='difficulty' min="0" max="10" value={this.state.difficulty_param} onChange={this.update.bind(this)} onBlur={this.validate.bind(this)}/></div>
+        <div><label>Difficulty: </label><input type='number' ref='difficulty' min="0" max="10" value={this.state.difficulty_param} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
         <button onClick={
           () => httpPost(this.newMazeUrl,
             {
@@ -206,7 +205,7 @@ export default class App extends React.Component {
             },
             request_game_callback)
           }>Request Game</button>
-        <div><label>Game ID: </label><input type='text' ref='game_id' value={this.state.game_id} onChange={this.update.bind(this)}/></div>
+        <div><label>Game ID: </label><input type='text' ref='game_id' value={this.state.game_id} onChange={this.update_params.bind(this)}/></div>
         <button
           style={{width: '100%', height: '15%'}}
           onClick={() => {
@@ -282,5 +281,5 @@ App.defaultProps = {
   pony_name_param: 'Fluttershy',
   difficulty_param: 1,
   gameStarted: false, // ! Cannot be true. Fix.
-  game_id: '342e33fd-be7b-4d5f-8c51-685dbd6b97b0',
+  game_id: 'f86a1d3c-3138-4b7e-99a7-ca654d6d56e0',
 }
