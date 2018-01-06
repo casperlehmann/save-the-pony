@@ -28,8 +28,7 @@ export default class App extends React.Component {
       hidden_url: props.hidden_url,
     };
     this.ponyChallengeUrlStub = 'https://ponychallenge.trustpilot.com'
-    this.newMazeUrl = this.ponyChallengeUrlStub + '/pony-challenge/maze'
-    this.gameUrlStub = this.ponyChallengeUrlStub + '/pony-challenge/maze/'
+    this.newMazeUrl = this.ponyChallengeUrlStub + '/pony-challenge/maze/'
   }
 
   updateGameState(data) {
@@ -72,7 +71,7 @@ export default class App extends React.Component {
       return 'url('+exit_character+')'
     }
     else {
-      return url(https://i.imgur.com/c3EsnP6.jpg)'
+      return ''//'url(https://i.imgur.com/c3EsnP6.jpg)'
     }
   }
 
@@ -87,17 +86,17 @@ export default class App extends React.Component {
     else if (i === this.state.pony_pos + this.state.width) {direction = 'south'}
     // ! handle failure
     httpPost(
-      this.gameUrlStub  + this.state.game_id,
+      this.newMazeUrl  + this.state.game_id,
       {
         "direction": direction
       },
       (data) => this.pony_moved_callback(data) // ! We need the context.
-      )
+    )
   }}
 
   pony_moved_callback(data) {
     httpGet(
-      this.gameUrlStub + this.state.game_id,
+      this.newMazeUrl + this.state.game_id,
       (data) => {this.updateGameState(data)}
     )
   }
@@ -165,17 +164,12 @@ export default class App extends React.Component {
       alignItems: 'center'
     };
     if (this.state.hidden_url) {
-      //var s = require('url(' + this.ponyChallengeUrlStub + this.state.hidden_url + ')')
-      //console.log(s)
-      //window.open(this.ponyChallengeUrlStub + this.state.hidden_url)
-      //console.log(this.ponyChallengeUrlStub + this.state.hidden_url)
       return (
         <div>
           <img src={this.ponyChallengeUrlStub + this.state.hidden_url}
             width={window.innerWidth-20} height={window.innerHeight-20}/>
         </div>
-      )
-    }
+      )}
     if (!this.state.gameStarted) {
       return this.renderMenu(outerStyle, menuStyle)
     }
@@ -210,7 +204,7 @@ export default class App extends React.Component {
           style={{width: '100%', height: '15%'}}
           onClick={() => {
             httpGet(
-              this.gameUrlStub + this.state.game_id,
+              this.newMazeUrl + this.state.game_id,
               (data) => {
                 this.updateGameState(data);
                 this.updateMap(data);
