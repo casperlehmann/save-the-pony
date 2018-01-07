@@ -181,7 +181,12 @@ export default class App extends React.Component {
   fetchGameState(data) {
     httpGet(
       this.ponyChallengeUrl + '/' + this.state.game_id,
-      (data) => {this.updateGameState(data)}
+      (data) => {
+        this.updateGameState(data)
+        if (data['game-state']['state-result'] === 'Can\'t walk in there'){
+          console.log('You ran into a wall. While you come to your senses, the monster closes in.')
+        }
+      }
   )}
 
   update_params(){
