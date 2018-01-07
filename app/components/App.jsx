@@ -1,5 +1,5 @@
 import React from 'react';
-import {pony_character, domo_character, exit_character} from './resources'
+import {fluttershy, rainbow_dash, domokun, exit} from './resources'
 import {makeBoard} from './make_board'
 import {Tile, TileTransformer} from './tile'
 import PropTypes from 'prop-types';
@@ -9,6 +9,12 @@ export default class App extends React.Component {
 
   constructor(props) {
     super();
+    let pony
+    if (props.pony_name === 'Fluttershy'){
+      pony = fluttershy
+    } else if (props.pony_name === 'Rainbow Dash'){
+      pony = rainbow_dash
+    }
     this.state = {
       data: props.data,
       width: props.width,
@@ -24,6 +30,7 @@ export default class App extends React.Component {
       pixelHeight: '500px',
       game_id: props.game_id,
       hidden_url: props.hidden_url,
+      pony_character: pony
     };
     this.ponyChallengeUrlStub = 'https://ponychallenge.trustpilot.com'
     this.newMazeUrl = this.ponyChallengeUrlStub + '/pony-challenge/maze/'
@@ -70,13 +77,13 @@ export default class App extends React.Component {
   }
   getBackground(position) {
     if (this.state.pony_pos == position) {
-      return 'url('+pony_character+')'
+      return 'url('+this.state.pony_character+')'
     }
     else if (this.state.domo_pos == position) {
-      return 'url('+domo_character+')'
+      return 'url('+domokun+')'
     }
     else if (this.state.exit_pos == position) {
-      return 'url('+exit_character+')'
+      return 'url('+exit+')'
     }
     else {
       return ''//'url(https://i.imgur.com/c3EsnP6.jpg)'
