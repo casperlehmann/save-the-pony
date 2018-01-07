@@ -29,6 +29,16 @@ export default class App extends React.Component {
     this.newMazeUrl = this.ponyChallengeUrlStub + '/pony-challenge/maze/'
   }
 
+  loadStateFromServer(){
+    httpGet(
+      this.newMazeUrl + this.state.game_id,
+      (data) => {
+        this.updateGameState(data);
+        this.updateMap(data);
+      }
+    )
+  }
+
   updateGameState(data) {
     this.setState({
       pony_pos: data.pony[0],
@@ -75,29 +85,65 @@ export default class App extends React.Component {
 
   clickHandler(i) {
     if (!(this.state.pony_paths.indexOf(i) != -1)){
+      // If the tile clicked is not possible to walk to, ignore and return nothing.
       return
     } else {
+      let direction = this.translateTileNumberToDirection(i)
+      // ! handle failure
+      httpPost(
+        this.newMazeUrl  + this.state.game_id,
+        {
+          "direction": direction
+        },
+        (data) => this.fetchGameState(data) // ! We need the context.
+      )
+    }
+  }
+
+  translateTileNumberToDirection(i) {
     let direction
     if (i === this.state.pony_pos - this.state.width) {direction = 'north'}
     else if (i === this.state.pony_pos - 1) {direction = 'west'}
     else if (i === this.state.pony_pos + 1) {direction = 'east'}
     else if (i === this.state.pony_pos + this.state.width) {direction = 'south'}
-    // ! handle failure
-    httpPost(
-      this.newMazeUrl  + this.state.game_id,
-      {
-        "direction": direction
-      },
-      (data) => this.pony_moved_callback(data) // ! We need the context.
-    )
-  }}
+    return direction
+  }
 
-  pony_moved_callback(data) {
+  tileAdjacentToPony(i) {
+    let tilesAdjacentToPony = [
+      this.state.pony_pos - this.state.width,
+      this.state.pony_pos - 1,
+      this.state.pony_pos + 1,
+      this.state.pony_pos + this.state.width
+    ]
+    if (tilesAdjacentToPony.indexOf(i) > -1) { return true; }
+    return false;
+  }
+
+  hoverHandler(i, e, action) {
+    if (action === 'leave') {
+      return (
+        e.target.style.backgroundColor = '',
+        e.target.style.opacity = 0
+    )}
+    let walkable = false
+    if ((this.state.pony_paths.indexOf(i) != -1)){
+      walkable = true
+    }
+    const isAdjacent = this.tileAdjacentToPony(i)
+    const opacity = walkable ? .5 : .2
+    const color = walkable ? 'green' : 'red'
+    return (
+      e.target.style.backgroundColor = color,
+      e.target.style.opacity = opacity
+    )
+  }
+
+  fetchGameState(data) {
     httpGet(
       this.newMazeUrl + this.state.game_id,
       (data) => {this.updateGameState(data)}
-    )
-  }
+  )}
 
   update_params(){
     this.setState({
@@ -201,16 +247,9 @@ export default class App extends React.Component {
         <div><label>Game ID: </label><input type='text' ref='game_id' value={this.state.game_id} onChange={this.update_params.bind(this)}/></div>
         <button
           style={{width: '100%', height: '15%'}}
-          onClick={() => {
-            httpGet(
-              this.newMazeUrl + this.state.game_id,
-              (data) => {
-                this.updateGameState(data);
-                this.updateMap(data);
-              }
-            )
-          }}
-        >Start Game</button>
+          onClick={this.loadStateFromServer}
+          >Start Game
+        </button>
       </div>
     )
   }
@@ -231,7 +270,8 @@ export default class App extends React.Component {
               east = {tile.wallEast}
               west = {tile.wallWest}
               background = {background}
-              clickHandler = {() => this.clickHandler(index)}/>;
+              clickHandler = {() => this.clickHandler(index)}
+              hoverHandler = {(e, action) => this.hoverHandler(index, e, action)}/>;
           })
         })}
       </div>

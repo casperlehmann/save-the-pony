@@ -15,7 +15,20 @@ export const Tile = (params) => {
       borderStyle: 'solid',
       borderColor: 'black',
     }
-    return <div onClick={params.clickHandler} style={style}></div>;
+    return (
+        <div
+            onClick={params.clickHandler}
+            style={style}
+            ><div
+                onMouseEnter={(e) => params.hoverHandler(e, 'enter')}
+                onMouseOut={(e) => params.hoverHandler(e, 'leave')}
+                style={{
+                    overflow: 'hidden',
+                    height: '100%',
+                }}
+            ></div>
+        </div>
+    );
   }
 
 export const TileTransformer = (tiles, rowIndex, columnIndex, width, height) => {
