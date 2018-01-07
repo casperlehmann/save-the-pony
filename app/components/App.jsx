@@ -236,10 +236,27 @@ export default class App extends React.Component {
         <div><label>Height: </label><input type='number' ref='height' min="15" max="25" value={this.state.height} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
         <div>
           <label>Pony Name: </label>
-          <select type='text' ref='pony_name' value={this.state.pony_name} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}>
-            <option value='Fluttershy'>Fluttershy</option>
-            <option value='Rainbow Dash'>Rainbow Dash</option>
-          </select>
+          <div>
+            <img
+              onClick={
+                () => this.setState({
+                  pony_name: 'Fluttershy',
+                  pony_character: fluttershy,
+                })
+              }
+              src={fluttershy} width='100px'></img>
+          </div>
+          <div>
+            <img
+              onClick={
+                () => this.setState({
+                  pony_name: 'Rainbow Dash',
+                  pony_character: rainbow_dash,
+                })
+              }
+              src={rainbow_dash} width='100px'></img>
+          </div>
+          <label>{this.state.pony_name}</label>
         </div>
         <div><label>Difficulty: </label><input type='number' ref='difficulty' min="0" max="10" value={this.state.difficulty} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
         <button onClick={
