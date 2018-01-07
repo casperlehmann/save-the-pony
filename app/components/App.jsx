@@ -5,6 +5,31 @@ import {Tile, TileTransformer} from './tile'
 import PropTypes from 'prop-types';
 import {httpPost, httpGet} from './requests';
 
+const addKeyboardControls = (game) => {
+  document.addEventListener('keydown', (event) => {
+    const keyName = event.key;
+    //console.log(keyName)
+    if (keyName === 'ArrowLeft'){
+      if (game.state.gameStarted) {
+        game.walkDirection('west')}
+    } else if (keyName === 'ArrowRight'){
+      if (game.state.gameStarted) {
+        game.walkDirection('east')}
+    } else if (keyName === 'ArrowUp'){
+      if (game.state.gameStarted) {
+        game.walkDirection('north')}
+    } else if (keyName === 'ArrowDown'){
+      if (game.state.gameStarted) {
+        game.walkDirection('south')}
+    } else if (keyName === 'Enter') {
+      if (!game.state.gameStarted) {
+        console.log('Game started')
+        game.loadStateFromServer()
+      }
+    }
+  });
+}
+
 export default class App extends React.Component {
 
   constructor(props) {
@@ -34,7 +59,7 @@ export default class App extends React.Component {
     };
     this.ponyChallengeUrlStub = 'https://ponychallenge.trustpilot.com'
     this.ponyChallengeUrl = this.ponyChallengeUrlStub + '/pony-challenge/maze'
-  }
+    addKeyboardControls(this)
   }
 
   loadStateFromServer(){
@@ -92,20 +117,26 @@ export default class App extends React.Component {
   }
 
   clickHandler(i) {
-    if (!(this.state.pony_paths.indexOf(i) != -1)){
-      // If the tile clicked is not possible to walk to, ignore and return nothing.
-      return
-    } else {
+    if (this.tileAdjacentToPony(i)){
       let direction = this.translateTileNumberToDirection(i)
-      // ! handle failure
-      httpPost(
-        this.ponyChallengeUrl + '/' + this.state.game_id,
-        {
-          "direction": direction
-        },
-        (data) => this.fetchGameState(data) // ! We need the context.
-      )
+      this.walkDirection(direction)
     }
+  }
+
+  walkDirection(direction) {
+    if (!this.state.gameStarted){
+      return
+    }
+    // ! handle failure
+    httpPost(
+      this.ponyChallengeUrl + '/' + this.state.game_id,
+      {
+        "direction": direction
+      },
+      (data) => {
+        this.fetchGameState(data) // ! We need the context.
+      }
+    )
   }
 
   translateTileNumberToDirection(i) {
@@ -347,5 +378,5 @@ App.defaultProps = {
   height: 15,
   pony_name: 'Fluttershy',//'Rainbow Dash',
   difficulty: 1,
-  game_id: 'f86a1d3c-3138-4b7e-99a7-ca654d6d56e0',
+  game_id: '2fcc1b7d-40bf-4429-8bdf-5ce5fedb8d34',
 }
