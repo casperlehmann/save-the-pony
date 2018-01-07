@@ -157,7 +157,6 @@ export default class App extends React.Component {
     this.setState({
       width: this.refs.width.value,
       height: this.refs.height.value,
-      pony_name: this.refs.pony_name.value,
       difficulty: this.refs.difficulty.value,
       game_id: this.refs.game_id.value,
     })
@@ -170,13 +169,6 @@ export default class App extends React.Component {
       if (isNaN(parsed)) {bounded = min} else {bounded = Math.max(Math.min(max, parsed), min)}
       return bounded
     }
-    const proofNameIsPonyName = (name) => {
-      if( ['Fluttershy', 'Rainbow Dash'].indexOf(name) > -1){
-        return this.refs.pony_name.value
-      } else {
-        return 'Fluttershy'
-      }
-    }
     const newBlockWidth = proofDimIsWithinRange(this.refs.width.value, 15, 25)
     const newBlockHeight = proofDimIsWithinRange(this.refs.height.value, 15, 25)
     const widthPerBlock = Math.min(500 + 40*(newBlockWidth-15), window.innerWidth-20)/newBlockWidth
@@ -187,7 +179,6 @@ export default class App extends React.Component {
       pixelWidth: newBlockWidth * blockUnit + 'px',
       height: newBlockHeight,
       pixelHeight: newBlockHeight * blockUnit + 'px',
-      pony_name: proofNameIsPonyName(this.refs.pony_name.value),
       difficulty: proofDimIsWithinRange(this.refs.difficulty.value, 0, 10),
       game_id: this.refs.game_id.value,
     })
@@ -232,33 +223,54 @@ export default class App extends React.Component {
     const request_game_callback = (data) => {this.setState({game_id: data.maze_id});}
     return(
       <div className="StartScreen" style={Object.assign(outerStyle, menuStyle)}>
-        <div><label>Width: </label><input type='number' ref='width' min="15" max="25" value={this.state.width} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
-        <div><label>Height: </label><input type='number' ref='height' min="15" max="25" value={this.state.height} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
-        <div>
-          <label>Pony Name: </label>
+        <div height='500px'>
+          <label>Choose a Pony:</label>
           <div>
-            <img
-              onClick={
-                () => this.setState({
-                  pony_name: 'Fluttershy',
-                  pony_character: fluttershy,
-                })
-              }
-              src={fluttershy} width='100px'></img>
-          </div>
-          <div>
-            <img
-              onClick={
-                () => this.setState({
-                  pony_name: 'Rainbow Dash',
-                  pony_character: rainbow_dash,
-                })
-              }
-              src={rainbow_dash} width='100px'></img>
+            <div
+              onClick={() => this.setState({
+                pony_name: 'Fluttershy',
+                pony_character: fluttershy,
+              })}
+              style={{
+                backgroundImage: 'url('+fluttershy+')',
+                backgroundSize: 'cover',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                display: 'inline-block',
+                borderStyle: 'solid',
+                borderColor: 'black',
+                width: '140px',
+                height: '140px',
+                margin: '10px',
+            }}
+            ></div>
+            <div
+              onClick = {() => this.setState({
+                pony_name: 'Rainbow Dash',
+                pony_character: rainbow_dash,
+              })}
+              style={{
+                backgroundImage: 'url('+rainbow_dash+')',
+                backgroundSize: 'cover',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                display: 'inline-block',
+                borderStyle: 'solid',
+                borderColor: 'black',
+                width: '140px',
+                height: '140px',
+                margin: '10px',
+              }}
+            >
+            </div>
           </div>
           <label>{this.state.pony_name}</label>
         </div>
-        <div><label>Difficulty: </label><input type='number' ref='difficulty' min="0" max="10" value={this.state.difficulty} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
+        <div height='500px'>
+          <div style={{display: 'inline', padding: 10}}><label>Width: </label><input type='number' ref='width' min="15" max="25" value={this.state.width} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
+          <div style={{display: 'inline', padding: 10}}><label>Height: </label><input type='number' ref='height' min="15" max="25" value={this.state.height} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
+          <div style={{display: 'inline', padding: 10}}><label>Difficulty: </label><input type='number' ref='difficulty' min="0" max="10" value={this.state.difficulty} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
+        </div>
         <button onClick={
           () => httpPost(
             this.ponyChallengeUrl,
