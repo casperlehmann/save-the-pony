@@ -33,12 +33,13 @@ export default class App extends React.Component {
       pony_character: pony
     };
     this.ponyChallengeUrlStub = 'https://ponychallenge.trustpilot.com'
-    this.newMazeUrl = this.ponyChallengeUrlStub + '/pony-challenge/maze/'
+    this.ponyChallengeUrl = this.ponyChallengeUrlStub + '/pony-challenge/maze'
+  }
   }
 
   loadStateFromServer(){
     httpGet(
-      this.newMazeUrl + this.state.game_id,
+      this.ponyChallengeUrl + '/' + this.state.game_id,
       (data) => {
         this.updateGameState(data);
         this.updateMap(data);
@@ -98,7 +99,7 @@ export default class App extends React.Component {
       let direction = this.translateTileNumberToDirection(i)
       // ! handle failure
       httpPost(
-        this.newMazeUrl  + this.state.game_id,
+        this.ponyChallengeUrl + '/' + this.state.game_id,
         {
           "direction": direction
         },
@@ -148,7 +149,7 @@ export default class App extends React.Component {
 
   fetchGameState(data) {
     httpGet(
-      this.newMazeUrl + this.state.game_id,
+      this.ponyChallengeUrl + '/' + this.state.game_id,
       (data) => {this.updateGameState(data)}
   )}
 
@@ -242,19 +243,20 @@ export default class App extends React.Component {
         </div>
         <div><label>Difficulty: </label><input type='number' ref='difficulty' min="0" max="10" value={this.state.difficulty} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
         <button onClick={
-          () => httpPost(this.newMazeUrl,
+          () => httpPost(
+            this.ponyChallengeUrl,
             {
-              "maze-width": this.state.width,
-              "maze-height": this.state.height,
+              "maze-width": parseInt(this.state.width),
+              "maze-height": parseInt(this.state.height),
               "maze-player-name": this.state.pony_name,
-              "difficulty": this.state.difficulty
+              "difficulty": parseInt(this.state.difficulty)
             },
             request_game_callback)
           }>Request Game</button>
         <div><label>Game ID: </label><input type='text' ref='game_id' value={this.state.game_id} onChange={this.update_params.bind(this)}/></div>
         <button
           style={{width: '100%', height: '15%'}}
-          onClick={this.loadStateFromServer}
+          onClick={() => this.loadStateFromServer()}
           >Start Game
         </button>
       </div>
@@ -314,7 +316,7 @@ App.defaultProps = {
   exit_pos: 9,
   width: 15,
   height: 15,
-  pony_name: 'Fluttershy',
+  pony_name: 'Fluttershy',//'Rainbow Dash',
   difficulty: 1,
   game_id: 'f86a1d3c-3138-4b7e-99a7-ca654d6d56e0',
 }
