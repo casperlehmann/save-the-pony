@@ -17,11 +17,9 @@ export default class App extends React.Component {
       domo_pos: props.domo_pos,
       exit_pos: props.exit_pos,
       pony_paths: [],
-      gameStarted: props.gameStarted,
-      width_param: props.width_param,
-      height_param: props.height_param,
-      pony_name_param: props.pony_name_param,
-      difficulty_param: props.difficulty_param,
+      gameStarted: false,
+      pony_name: props.pony_name,
+      difficulty: props.difficulty,
       pixelWidth: '500px',
       pixelHeight: '500px',
       game_id: props.game_id,
@@ -103,10 +101,10 @@ export default class App extends React.Component {
 
   update_params(){
     this.setState({
-      width_param: this.refs.width.value,
-      height_param: this.refs.height.value,
-      pony_name_param: this.refs.pony_name.value,
-      difficulty_param: this.refs.difficulty.value,
+      width: this.refs.width.value,
+      height: this.refs.height.value,
+      pony_name: this.refs.pony_name.value,
+      difficulty: this.refs.difficulty.value,
       game_id: this.refs.game_id.value,
     })
   }
@@ -131,12 +129,12 @@ export default class App extends React.Component {
     const heightPerBlock = Math.min(500 + 40*(newBlockHeight-15), window.innerHeight-20)/newBlockHeight
     const blockUnit = Math.min(widthPerBlock, heightPerBlock)
     this.setState({
-      width_param: newBlockWidth,
+      width: newBlockWidth,
       pixelWidth: newBlockWidth * blockUnit + 'px',
-      height_param: newBlockHeight,
+      height: newBlockHeight,
       pixelHeight: newBlockHeight * blockUnit + 'px',
-      pony_name_param: proofNameIsPonyName(this.refs.pony_name.value),
-      difficulty_param: proofDimIsWithinRange(this.refs.difficulty.value, 0, 10),
+      pony_name: proofNameIsPonyName(this.refs.pony_name.value),
+      difficulty: proofDimIsWithinRange(this.refs.difficulty.value, 0, 10),
       game_id: this.refs.game_id.value,
     })
   }
@@ -180,22 +178,23 @@ export default class App extends React.Component {
     const request_game_callback = (data) => {this.setState({game_id: data.maze_id});}
     return(
       <div className="StartScreen" style={Object.assign(outerStyle, menuStyle)}>
-        <div><label>Width: </label><input type='number' ref='width' min="15" max="25" value={this.state.width_param} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
-        <div><label>Height: </label><input type='number' ref='height' min="15" max="25" value={this.state.height_param} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
-        <div><label>Pony Name: </label>
-          <select type='text' ref='pony_name' value={this.state.pony_name_param} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}>
+        <div><label>Width: </label><input type='number' ref='width' min="15" max="25" value={this.state.width} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
+        <div><label>Height: </label><input type='number' ref='height' min="15" max="25" value={this.state.height} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
+        <div>
+          <label>Pony Name: </label>
+          <select type='text' ref='pony_name' value={this.state.pony_name} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}>
             <option value='Fluttershy'>Fluttershy</option>
             <option value='Rainbow Dash'>Rainbow Dash</option>
           </select>
         </div>
-        <div><label>Difficulty: </label><input type='number' ref='difficulty' min="0" max="10" value={this.state.difficulty_param} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
+        <div><label>Difficulty: </label><input type='number' ref='difficulty' min="0" max="10" value={this.state.difficulty} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
         <button onClick={
           () => httpPost(this.newMazeUrl,
             {
-              "maze-width": this.state.width_param,
-              "maze-height": this.state.height_param,
-              "maze-player-name": this.state.pony_name_param,
-              "difficulty": this.state.difficulty_param
+              "maze-width": this.state.width,
+              "maze-height": this.state.height,
+              "maze-player-name": this.state.pony_name,
+              "difficulty": this.state.difficulty
             },
             request_game_callback)
           }>Request Game</button>
@@ -247,10 +246,8 @@ App.propTypes = {
   pony_pos: PropTypes.number,
   domo_pos: PropTypes.number,
   exit_pos: PropTypes.number,
-  width_param: PropTypes.number,
-  height_param: PropTypes.number,
-  pony_name_param: PropTypes.string,
-  difficulty_param: PropTypes.number,
+  pony_name: PropTypes.string,
+  difficulty: PropTypes.number,
   gameStarted: PropTypes.bool,
   game_id: PropTypes.string,
 }
@@ -265,15 +262,12 @@ const test_data = [
 
 App.defaultProps = {
   data: test_data,
-  width: 5,
-  height: 5,
   pony_pos: 0,
   domo_pos: 3,
   exit_pos: 9,
-  width_param: 15,
-  height_param: 15,
-  pony_name_param: 'Fluttershy',
-  difficulty_param: 1,
-  gameStarted: false, // ! Cannot be true. Fix.
+  width: 15,
+  height: 15,
+  pony_name: 'Fluttershy',
+  difficulty: 1,
   game_id: 'f86a1d3c-3138-4b7e-99a7-ca654d6d56e0',
 }
