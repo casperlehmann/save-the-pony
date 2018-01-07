@@ -30,6 +30,25 @@ const addKeyboardControls = (game) => {
   });
 }
 
+const PonySelect = (params) => {
+  return (
+    <div
+    onClick={params.clickHandler}
+    style={{
+      backgroundImage: 'url('+ params.character+ ')',
+      backgroundSize: 'cover',
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'center',
+      display: 'inline-block',
+      borderStyle: 'solid',
+      borderColor: 'black',
+      width: '140px',
+      height: '140px',
+      margin: '10px',
+  }}
+  ></div>)
+}
+
 export default class App extends React.Component {
 
   constructor(props) {
@@ -262,43 +281,18 @@ export default class App extends React.Component {
         <div height='500px'>
           <label>Choose a Pony:</label>
           <div>
-            <div
-              onClick={() => this.setState({
+            <PonySelect
+              character={fluttershy}
+              clickHandler={() => this.setState({
                 pony_name: 'Fluttershy',
                 pony_character: fluttershy,
-              })}
-              style={{
-                backgroundImage: 'url('+fluttershy+')',
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center',
-                display: 'inline-block',
-                borderStyle: 'solid',
-                borderColor: 'black',
-                width: '140px',
-                height: '140px',
-                margin: '10px',
-            }}
-            ></div>
-            <div
-              onClick = {() => this.setState({
+            })}/>
+            <PonySelect
+              character={rainbow_dash}
+              clickHandler={() => this.setState({
                 pony_name: 'Rainbow Dash',
                 pony_character: rainbow_dash,
-              })}
-              style={{
-                backgroundImage: 'url('+rainbow_dash+')',
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center',
-                display: 'inline-block',
-                borderStyle: 'solid',
-                borderColor: 'black',
-                width: '140px',
-                height: '140px',
-                margin: '10px',
-              }}
-            >
-            </div>
+            })}/>
           </div>
           <label>{this.state.pony_name}</label>
         </div>
