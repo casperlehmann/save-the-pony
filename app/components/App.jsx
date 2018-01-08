@@ -33,21 +33,24 @@ const addKeyboardControls = (game) => {
 const PonySelect = (params) => {
   return (
     <div
-    onClick={params.clickHandler}
-    style={{
-      backgroundImage: 'url('+ params.character+ ')',
-      backgroundSize: 'cover',
-      backgroundRepeat: 'no-repeat',
-      backgroundPosition: 'center',
-      display: 'inline-block',
-      borderStyle: 'solid',
-      borderColor: 'black',
-      width: '140px',
-      height: '140px',
-      margin: '10px',
-  }}
-  ></div>)
-}
+      onClick={params.clickHandler}
+      style={{
+        backgroundImage: 'url('+ params.character+ ')',
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        display: 'inline-block',
+        borderStyle: 'solid',
+        borderColor: 'black',
+        width: '140px',
+        height: '140px',
+        marginLeft: '10px',
+        marginRight: '10px',
+      }}
+    ></div>
+)}
+
+
 
 export default class App extends React.Component {
 
