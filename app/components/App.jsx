@@ -126,19 +126,12 @@ export default class App extends React.Component {
       gameStarted: true,
     })
   }
+
   getBackground(position) {
-    if (this.state.pony_pos == position) {
-      return 'url('+this.state.pony_character+')'
-    }
-    else if (this.state.domo_pos == position) {
-      return 'url('+domokun+')'
-    }
-    else if (this.state.exit_pos == position) {
-      return 'url('+exit+')'
-    }
-    else {
-      return ''//'url(https://i.imgur.com/c3EsnP6.jpg)'
-    }
+    if (this.state.pony_pos == position) {return 'url('+this.state.pony_character+')'}
+    else if (this.state.domo_pos == position) {return 'url('+domokun+')'}
+    else if (this.state.exit_pos == position) {return 'url('+exit+')'}
+    else {return ''}
   }
 
   clickHandler(i) {
