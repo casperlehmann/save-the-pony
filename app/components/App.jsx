@@ -7,6 +7,7 @@ import {httpPost, httpGet} from './requests';
 import {addKeyboardControls} from './navigation'
 
 const CharacterSelect = (props) => (
+  // Visual for framing the character selection part of the menu.
   <div style={{height: 220, marginLeft: 20, width: 460, marginTop: 20,}}>
     <div style={{textAlign: 'center',}}>
       <div style={{padding: 10}}>
@@ -23,6 +24,7 @@ const CharacterSelect = (props) => (
 )
 
 const PonySelect = (params) => {
+  // Widget representing ponies in the character selection widget.
   return (
     <div
       onClick={params.clickHandler}
@@ -43,7 +45,7 @@ const PonySelect = (params) => {
 )}
 
 export default class App extends React.Component {
-
+  // Main app
   constructor(props) {
     super();
     let pony
@@ -80,13 +82,14 @@ export default class App extends React.Component {
       (data) => {
         this.updateGameState(data);
         this.updateMap(data);
-        // Make sure viewport size has changed is reset.
+        // We make sure viewport size has changed is reset:
         this.setViewPortSize(data.size[0], data.size[1]);
       }
     )
   }
 
   updateGameState(data) {
+    // This takes the state data from the API-call, and saves them to the model.
     this.setState({
       pony_pos: data.pony[0],
       domo_pos: data.domokun[0],
@@ -118,6 +121,7 @@ export default class App extends React.Component {
   }
 
   getBackground(position) {
+    // Return links to images for the game pieces.
     if (this.state.pony_pos == position) {return 'url('+this.state.pony_character+')'}
     else if (this.state.domo_pos == position) {return 'url('+domokun+')'}
     else if (this.state.exit_pos == position) {return 'url('+exit+')'}
@@ -125,6 +129,7 @@ export default class App extends React.Component {
   }
 
   clickHandler(i) {
+    // Takes an integer position of a click, and lets pony try to walk there.
     if (this.tileAdjacentToPony(i)){
       let direction = this.translateTileNumberToDirection(i)
       this.walkDirection(direction)
@@ -132,14 +137,13 @@ export default class App extends React.Component {
   }
 
   walkDirection(direction) {
+    // Do the API-call, provided game is on.
     if (!this.state.gameStarted){
       return
     }
     httpPost(
       this.ponyChallengeUrl + '/' + this.state.game_id,
-      {
-        "direction": direction
-      },
+      {"direction": direction},
       (data) => {
         this.fetchGameState(data) // ! We need the context.
       }
@@ -147,6 +151,7 @@ export default class App extends React.Component {
   }
 
   translateTileNumberToDirection(i) {
+    // The integer number of a given adjactent tile gets translated to a direction.
     let direction
     if (i === this.state.pony_pos - this.state.width) {direction = 'north'}
     else if (i === this.state.pony_pos - 1) {direction = 'west'}
@@ -156,6 +161,7 @@ export default class App extends React.Component {
   }
 
   tileAdjacentToPony(i) {
+    // Compare positions of the pony and a given tile.
     let tilesAdjacentToPony = [
       this.state.pony_pos - this.state.width,
       this.state.pony_pos - 1,
@@ -167,15 +173,14 @@ export default class App extends React.Component {
   }
 
   hoverHandler(i, e, action) {
+    // Turn the tiles green or red, depending on whether they are walkable.
     if (action === 'leave') {
       return (
         e.target.style.backgroundColor = '',
         e.target.style.opacity = 0
     )}
     let walkable = false
-    if ((this.state.pony_paths.indexOf(i) != -1)){
-      walkable = true
-    }
+    if ((this.state.pony_paths.indexOf(i) != -1)){ walkable = true }
     const isAdjacent = this.tileAdjacentToPony(i)
     const opacity = walkable ? .5 : .2
     const color = walkable ? 'green' : 'red'
@@ -186,6 +191,7 @@ export default class App extends React.Component {
   }
 
   fetchGameState(data) {
+    // Gets the current state of the game from the server, and updates locally.
     httpGet(
       this.ponyChallengeUrl + '/' + this.state.game_id,
       (data) => {
@@ -206,6 +212,7 @@ export default class App extends React.Component {
   }
 
   validate_params(){
+    // Sets state while making sure that parameters are within range.
     const proofDimIsWithinRange = (i, min, max) => {
       const parsed = parseInt(i)
       let bounded
@@ -230,6 +237,7 @@ export default class App extends React.Component {
   }
 
   setViewPortSize(newBlockWidth, newBlockHeight) {
+    // Take the dimensions of the board, and set suitable size of the viewport.
     const widthPerBlock = Math.min(500 + 40*(newBlockWidth-15), window.innerWidth-20)/newBlockWidth
     const heightPerBlock = Math.min(500 + 40*(newBlockHeight-15), window.innerHeight-20)/newBlockHeight
     const blockUnit = Math.min(widthPerBlock, heightPerBlock)
@@ -240,18 +248,14 @@ export default class App extends React.Component {
   }
 
   render() {
+    // Main render function.
     const outerStyle = {
-      width: this.state.pixelWidth,
-      height: this.state.pixelHeight,
-
-      borderTop: '1px',
-      borderBottom: '1px',
-      borderLeft: '1px',
-      borderRight: '1px',
-
-      borderStyle: 'solid',
-      borderColor: 'black',
+      width: this.state.pixelWidth, height: this.state.pixelHeight,
+      borderTop: '1px', borderBottom: '1px',
+      borderLeft: '1px', borderRight: '1px',
+      borderStyle: 'solid', borderColor: 'black',
     };
+    // Logic for showing winning screen is here:
     if (this.state.hidden_url) {
       return (
         <div>
@@ -266,6 +270,7 @@ export default class App extends React.Component {
   }
 
   renderMenu(outerStyle) {
+    // The render function for the menu screen.
     const requestGame = () => httpPost(
       this.ponyChallengeUrl,
       {
@@ -328,6 +333,7 @@ export default class App extends React.Component {
   }
 
   renderGame(outerStyle){
+    // The render function after the game has begun.
     const gameStyle =  {
       display: 'grid',
       gridTemplateColumns: 'repeat(' + this.state.width + ', 1fr)',
