@@ -393,5 +393,5 @@ App.defaultProps = {
   height: 15,
   pony_name: 'Fluttershy',
   difficulty: 1,
-  game_id: '2fcc1b7d-40bf-4429-8bdf-5ce5fedb8d34',
+  game_id: '',
 }

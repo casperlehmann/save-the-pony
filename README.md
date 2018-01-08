@@ -1,6 +1,13 @@
 # Save the Pony
-Solution for Trustpilot's My Little Code Challenge.
+Solution for Trustpilot's My Little Code Challenge build with React.
+Point and click to move around, or use the arrowkeys to control your pony.
+
 Install and run as described below, and try not to get eaten.
+
+## To-do
+* Write tests.
+* Split Menu into smaller classes.
+* Consider doing refactoring of Tiles.
 
 ## Installation
 
@@ -16,4 +23,5 @@ Install and run as described below, and try not to get eaten.
 
 ## Etc.
 Challenge website: https://ponychallenge.trustpilot.com/index.html
+
 API documentation: https://ponychallenge.trustpilot.com/api-docs/index.html
