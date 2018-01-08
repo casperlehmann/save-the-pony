@@ -223,18 +223,30 @@ export default class App extends React.Component {
       if (isNaN(parsed)) {bounded = min} else {bounded = Math.max(Math.min(max, parsed), min)}
       return bounded
     }
-    const newBlockWidth = proofDimIsWithinRange(this.refs.width.value, 15, 25)
-    const newBlockHeight = proofDimIsWithinRange(this.refs.height.value, 15, 25)
+    const newWidth = this.refs.width.value
+    const newHeight = this.refs.height.value
+    const newDifficulty = this.refs.difficulty.value
+    const newGameID = this.refs.game_id.value
+
+    const newBlockWidth = proofDimIsWithinRange(newWidth, 15, 25)
+    const newBlockHeight = proofDimIsWithinRange(newHeight, 15, 25)
+    this.setViewPortSize(newBlockWidth, newBlockHeight)
+
+    this.setState({
+      width: newBlockWidth,
+      height: newBlockHeight,
+      difficulty: proofDimIsWithinRange(newDifficulty, 0, 10),
+      game_id: newGameID,
+    })
+  }
+
+  setViewPortSize(newBlockWidth, newBlockHeight) {
     const widthPerBlock = Math.min(500 + 40*(newBlockWidth-15), window.innerWidth-20)/newBlockWidth
     const heightPerBlock = Math.min(500 + 40*(newBlockHeight-15), window.innerHeight-20)/newBlockHeight
     const blockUnit = Math.min(widthPerBlock, heightPerBlock)
     this.setState({
-      width: newBlockWidth,
       pixelWidth: newBlockWidth * blockUnit + 'px',
-      height: newBlockHeight,
       pixelHeight: newBlockHeight * blockUnit + 'px',
-      difficulty: proofDimIsWithinRange(this.refs.difficulty.value, 0, 10),
-      game_id: this.refs.game_id.value,
     })
   }
 
