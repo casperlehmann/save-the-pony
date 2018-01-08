@@ -90,6 +90,8 @@ export default class App extends React.Component {
       (data) => {
         this.updateGameState(data);
         this.updateMap(data);
+        // Make sure viewport size has changed is reset.
+        this.setViewPortSize(data.size[0], data.size[1]);
       }
     )
   }
