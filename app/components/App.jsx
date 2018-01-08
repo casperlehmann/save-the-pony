@@ -101,16 +101,17 @@ export default class App extends React.Component {
       pony_pos: data.pony[0],
       domo_pos: data.domokun[0],
     },
-    // Upon updating, check for winning (or losing) conditions.
+    // Upon updating, check for winning (or losing) conditions. Redirect if appropriate.
     () => {
       if (data['game-state'].state === 'over'){
         this.setState({
           game_result: data['game-state']['state-result'], // "You lost. Killed by monster"
         })
+        window.location = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' // Your price
       } else if (data['game-state'].state === 'won'){
         this.setState({
           game_result: data['game-state']['state-result'], // "You won. Game ended"
-          hidden_url: data['game-state']['hidden-url'] // "/eW91X3NhdmVkX3RoZV9wb255.jpg"
+          hidden_url: this.ponyChallengeUrlStub + data['game-state']['hidden-url']
         })
       };
     }
