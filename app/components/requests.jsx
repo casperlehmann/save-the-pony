@@ -1,3 +1,11 @@
+const handlingResponse = (response) => {
+  if (response.ok) {
+    return response;
+  } else {
+    console.log('Error:', response.statusText);
+  }
+}
+
 export function httpPost(url, payload, callback)
 {
     fetch(url,  {
@@ -7,10 +15,11 @@ export function httpPost(url, payload, callback)
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(payload)
-    }).then((res) => res.json())
-    .then(function(data){
-      callback(data)
-    });
+    })
+    .then(handlingResponse)
+    .then((res) => res.json())
+    .then(function(data){callback(data)})
+    .catch(error => console.log(error));
 }
 
 export function httpGet(url, callback)
@@ -21,8 +30,9 @@ export function httpGet(url, callback)
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       }
-    }).then((res) => res.json())
-    .then(function(data){
-      callback(data)
-    });
+    })
+    .then(handlingResponse)
+    .then((res) => res.json())
+    .then(function(data){callback(data)})
+    .catch(error => console.log(error));
 }

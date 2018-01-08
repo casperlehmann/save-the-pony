@@ -66,8 +66,6 @@ const PonySelect = (params) => {
     ></div>
 )}
 
-
-
 export default class App extends React.Component {
 
   constructor(props) {
@@ -161,7 +159,6 @@ export default class App extends React.Component {
     if (!this.state.gameStarted){
       return
     }
-    // ! handle failure
     httpPost(
       this.ponyChallengeUrl + '/' + this.state.game_id,
       {
