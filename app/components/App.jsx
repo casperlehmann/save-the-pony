@@ -4,6 +4,7 @@ import {makeBoard} from './make_board'
 import {Tile, TileTransformer} from './tile'
 import PropTypes from 'prop-types';
 import {httpPost, httpGet} from './requests';
+import {addKeyboardControls} from './navigation'
 
 const CharacterSelect = (props) => (
   <div style={{height: 220, marginLeft: 20, width: 460, marginTop: 20,}}>
@@ -20,31 +21,6 @@ const CharacterSelect = (props) => (
     </div>
   </div>
 )
-
-const addKeyboardControls = (game) => {
-  document.addEventListener('keydown', (event) => {
-    const keyName = event.key;
-    //console.log(keyName)
-    if (keyName === 'ArrowLeft'){
-      if (game.state.gameStarted) {
-        game.walkDirection('west')}
-    } else if (keyName === 'ArrowRight'){
-      if (game.state.gameStarted) {
-        game.walkDirection('east')}
-    } else if (keyName === 'ArrowUp'){
-      if (game.state.gameStarted) {
-        game.walkDirection('north')}
-    } else if (keyName === 'ArrowDown'){
-      if (game.state.gameStarted) {
-        game.walkDirection('south')}
-    } else if (keyName === 'Enter') {
-      if (!game.state.gameStarted) {
-        console.log('Game started')
-        game.loadStateFromServer()
-      }
-    }
-  });
-}
 
 const PonySelect = (params) => {
   return (
