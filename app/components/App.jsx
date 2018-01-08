@@ -5,6 +5,22 @@ import {Tile, TileTransformer} from './tile'
 import PropTypes from 'prop-types';
 import {httpPost, httpGet} from './requests';
 
+const CharacterSelect = (props) => (
+  <div style={{height: 220, marginLeft: 20, width: 460, marginTop: 20,}}>
+    <div style={{textAlign: 'center',}}>
+      <div style={{padding: 10}}>
+        <label style={{height: 10, paddingTop: 10, paddingBottom: 10}}>Choose a Pony:</label>
+      </div>
+      <div style={{textAlign: 'center',}}>
+        {props.children}
+      </div>
+      <div style={{padding: 10}}>
+        <label style={{height: 10, paddingTop: 10, paddingBottom: 10}}>{props.parent.state.pony_name}</label>
+      </div>
+    </div>
+  </div>
+)
+
 const addKeyboardControls = (game) => {
   document.addEventListener('keydown', (event) => {
     const keyName = event.key;
@@ -254,7 +270,6 @@ export default class App extends React.Component {
     const outerStyle = {
       width: this.state.pixelWidth,
       height: this.state.pixelHeight,
-      display: 'grid',
 
       borderTop: '1px',
       borderBottom: '1px',
@@ -264,76 +279,87 @@ export default class App extends React.Component {
       borderStyle: 'solid',
       borderColor: 'black',
     };
-    const gameStyle =  {
-      gridTemplateColumns: 'repeat(' + this.state.width + ', 1fr)',
-      gridTemplateRows: 'repeat(' + this.state.height + ', 1fr)',
-    };
-    const menuStyle = {
-      justifyContent: 'center',
-      alignItems: 'center'
-    };
     if (this.state.hidden_url) {
       return (
         <div>
-          <img src={this.ponyChallengeUrlStub + this.state.hidden_url}
+          <img src={this.state.hidden_url}
             width={window.innerWidth-20} height={window.innerHeight-20}/>
         </div>
       )}
     if (!this.state.gameStarted) {
-      return this.renderMenu(outerStyle, menuStyle)
+      return this.renderMenu(outerStyle)
     }
-    return this.renderGame(outerStyle, gameStyle)
+    return this.renderGame(outerStyle)
   }
 
-  renderMenu(outerStyle, menuStyle) {
-    const request_game_callback = (data) => {this.setState({game_id: data.maze_id});}
+  renderMenu(outerStyle) {
+    const requestGame = () => httpPost(
+      this.ponyChallengeUrl,
+      {
+        "maze-width": parseInt(this.state.width),
+        "maze-height": parseInt(this.state.height),
+        "maze-player-name": this.state.pony_name,
+        "difficulty": parseInt(this.state.difficulty)
+      },
+      (data) => {this.setState({game_id: data.maze_id});}
+    )
+    const labelStyle = {height: 10, paddingTop: 10, paddingBottom: 10}
+    const buttonStyle = {width: '100%', height: 30}
+
     return(
-      <div className="StartScreen" style={Object.assign(outerStyle, menuStyle)}>
-        <div height='500px'>
-          <label>Choose a Pony:</label>
-          <div>
-            <PonySelect
-              character={fluttershy}
-              clickHandler={() => this.setState({
-                pony_name: 'Fluttershy',
-                pony_character: fluttershy,
-            })}/>
-            <PonySelect
-              character={rainbow_dash}
-              clickHandler={() => this.setState({
-                pony_name: 'Rainbow Dash',
-                pony_character: rainbow_dash,
-            })}/>
+      <div className="StartScreen" style={Object.assign(outerStyle)}>
+        <CharacterSelect parent={this}>
+          <PonySelect character={fluttershy} clickHandler={() => this.setState({pony_name: 'Fluttershy', pony_character: fluttershy, })}/>
+          <PonySelect character={rainbow_dash} clickHandler={() => this.setState({pony_name: 'Rainbow Dash', pony_character: rainbow_dash, })}/>
+        </CharacterSelect>
+        <div style={{height: 200, marginLeft: 20, width: 460, marginTop: 20}}>
+          <div style={{height: 20}}>
+            <label style={labelStyle}>Choose a map-size and game difficulty:</label>
           </div>
-          <label>{this.state.pony_name}</label>
+          <div style={{marginTop: 10}}>
+            <div style={{display: 'inline-block', width: 130, padding: 10, height: 20}}>
+              <label>Width: </label>
+              <input
+                ref='width' value={this.state.width}
+                type='number' min="15" max="25"
+                onChange={this.update_params.bind(this)}
+                onBlur={this.validate_params.bind(this)}
+            /></div>
+            <div style={{display: 'inline-block', width: 130, padding: 10, height: 20}}>
+              <label>Height: </label>
+              <input type='number' min="15" max="25"
+                ref='height' value={this.state.height}
+                onChange={this.update_params.bind(this)}
+                onBlur={this.validate_params.bind(this)}
+            /></div>
+            <div style={{display: 'inline-block', width: 130, padding: 10, height: 20}}>
+              <label>Difficulty: </label>
+              <input type='number' min="0" max="10"
+                ref='difficulty' value={this.state.difficulty}
+                onChange={this.update_params.bind(this)}
+                onBlur={this.validate_params.bind(this)}
+            /></div>
+          </div>
+          <div style={{marginTop: 10}}>
+            <button style={buttonStyle} onClick={requestGame}>Request Game</button>
+          </div>
+          <div style={{display: 'inline-block', height: 20, padding: 10, marginTop: 10}}>
+            <label style={labelStyle}>Game ID: </label>
+            <input style={{width: 220}} type='text' ref='game_id' value={this.state.game_id} onChange={this.update_params.bind(this)}/></div>
+          <div style={{marginTop: 10}}>
+            <button style={buttonStyle} onClick={() => this.loadStateFromServer()}>Start Game</button>
+          </div>
         </div>
-        <div height='500px'>
-          <div style={{display: 'inline', padding: 10}}><label>Width: </label><input type='number' ref='width' min="15" max="25" value={this.state.width} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
-          <div style={{display: 'inline', padding: 10}}><label>Height: </label><input type='number' ref='height' min="15" max="25" value={this.state.height} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
-          <div style={{display: 'inline', padding: 10}}><label>Difficulty: </label><input type='number' ref='difficulty' min="0" max="10" value={this.state.difficulty} onChange={this.update_params.bind(this)} onBlur={this.validate_params.bind(this)}/></div>
-        </div>
-        <button onClick={
-          () => httpPost(
-            this.ponyChallengeUrl,
-            {
-              "maze-width": parseInt(this.state.width),
-              "maze-height": parseInt(this.state.height),
-              "maze-player-name": this.state.pony_name,
-              "difficulty": parseInt(this.state.difficulty)
-            },
-            request_game_callback)
-          }>Request Game</button>
-        <div><label>Game ID: </label><input type='text' ref='game_id' value={this.state.game_id} onChange={this.update_params.bind(this)}/></div>
-        <button
-          style={{width: '100%', height: '15%'}}
-          onClick={() => this.loadStateFromServer()}
-          >Start Game
-        </button>
       </div>
     )
   }
 
-  renderGame(outerStyle, gameStyle){
+  renderGame(outerStyle){
+    const gameStyle =  {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(' + this.state.width + ', 1fr)',
+      gridTemplateRows: 'repeat(' + this.state.height + ', 1fr)',
+    };
     const tiles = makeBoard(this.state.data, this.state.width, this.state.height);
     return (
       <div className="Board" style={Object.assign(outerStyle, gameStyle)}>
@@ -386,7 +412,7 @@ App.defaultProps = {
   exit_pos: 9,
   width: 15,
   height: 15,
-  pony_name: 'Fluttershy',//'Rainbow Dash',
+  pony_name: 'Fluttershy',
   difficulty: 1,
   game_id: '2fcc1b7d-40bf-4429-8bdf-5ce5fedb8d34',
 }
