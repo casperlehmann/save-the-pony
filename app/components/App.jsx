@@ -199,6 +199,7 @@ export default class App extends React.Component {
         if (data['game-state']['state-result'] === 'Can\'t walk in there'){
           console.log('You ran into a wall. While you come to your senses, the monster closes in.')
         }
+        this.updateMap(data);
       }
   )}
 
