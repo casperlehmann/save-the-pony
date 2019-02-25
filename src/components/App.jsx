@@ -1,10 +1,14 @@
 import React from 'react';
-import {fluttershy, rainbow_dash, domokun, exit} from './resources'
 import {makeBoard} from './make_board'
 import {Tile, TileTransformer} from './tile'
 import PropTypes from 'prop-types';
 import {httpPost, httpGet} from './requests';
 import {addKeyboardControls} from './navigation'
+
+import fluttershy from '../assets/fluttershy.png'
+import rainbow_dash from '../assets/rainbow_dash.png'
+import domokun from '../assets/domo.png'
+import exit from '../assets/exit.png'
 
 const CharacterSelect = (props) => (
   // Visual for framing the character selection part of the menu.
