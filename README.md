@@ -16,6 +16,9 @@ Install and run as described below, and try not to get eaten.
 
 
 ## Etc.
+
+Want to see it live? Have a look: http://savethepony.casperlehmann.com/
+
 Challenge website: https://ponychallenge.trustpilot.com/index.html
 
 API documentation: https://ponychallenge.trustpilot.com/api-docs/index.html
